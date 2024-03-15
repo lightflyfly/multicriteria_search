@@ -25,4 +25,4 @@ wait_for_elastic_node_2() {
 wait_for_elastic_node_1
 wait_for_elastic_node_2
 
-python3 manage.py runserver "$DJANGO_HOST":"$DJANGO_PORT"
+uvicorn main:app --proxy-headers --host "$MAIN_HOST" --port "$MAIN_PORT"
