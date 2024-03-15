@@ -19,7 +19,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'suppliers'
+    'suppliers.apps.SuppliersConfig',
+    'rest_framework',
+    'django_elasticsearch_dsl',
 ]
 
 MIDDLEWARE = [
@@ -85,3 +87,14 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 25
+}
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': settings.elastic_host
+    },
+}
