@@ -95,6 +95,6 @@ REST_FRAMEWORK = {
 
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': settings.elastic_host
+        'hosts': settings.elastic_uri
     },
 }

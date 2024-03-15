@@ -11,6 +11,8 @@ log_levels = {
 
 
 class Settings(BaseSettings):
+    logging_level: str = "INFO"
+
     model_config = SettingsConfigDict(env_file=".env", extra='allow')
 
     secret_key: str = ...
