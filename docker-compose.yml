@@ -13,6 +13,8 @@ services:
       - .env
     depends_on:
       - elasticsearch
+    networks:
+      - elk
 
   elasticsearch:
     container_name: elasticsearch
@@ -36,6 +38,8 @@ services:
     image: logstash:7.16.2
     volumes:
       - ./configs/logstash/config.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./configs/logstash/pipelines.yml:/usr/share/logstash/config/pipelines.yml:ro
+      - ./configs/logstash/pipelines:/usr/share/logstash/config/pipelines:ro
     environment:
       LS_JAVA_OPTS: "-Xmx512m -Xms512m"
     ports:
@@ -58,6 +62,18 @@ services:
       - elk
     ports:
       - "5601:5601"
+
+  beats:
+    container_name: beats
+    image: elastic/filebeat:7.16.2
+    command: filebeat -e -strict.perms=false
+    volumes:
+      - ./configs/filebeat/config.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./host_metrics_app/:/host_metrics_app/:ro
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
 
 networks:
   elk:
