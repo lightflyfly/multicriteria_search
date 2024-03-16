@@ -12,46 +12,53 @@ services:
     env_file:
       - .env
     depends_on:
-      - elasticsearch-node1
-      - elasticsearch-node2
+      - elasticsearch
 
-  elasticsearch-node1:
-    image: elasticsearch:${STACK_VERSION}
-    container_name: elasticsearch-node1
-    env_file:
-      - .env
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:7.16.1
+    volumes:
+      - ./configs/elasticsearch/config.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./docker_volumes/elasticsearch/data:/usr/share/elasticsearch/data
     environment:
-      - node.name=elasticsearch-node1
-      - discovery.seed_hosts=elasticsearch-node1,elasticsearch-node2
-      - cluster.initial_master_nodes=elasticsearch-node1,elasticsearch-node2
-      - cluster.name=${CLUSTER_NAME}
-      - bootstrap.memory_lock=${MEMORY_LOCK}
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-      - xpack.security.enabled=false
-      - xpack.monitoring.collection.enabled=false
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+      ES_JAVA_OPTS: "-Xmx512m -Xms512m"
+      ELASTIC_USERNAME: "elastic"
+      ELASTIC_PASSWORD: "qwe123"
+      discovery.type: single-node
+    networks:
+      - elk
+    ports:
+      - "9200:9200"
+      - "9300:9300"
 
-
-  elasticsearch-node2:
-    image: elasticsearch:${STACK_VERSION}
-    container_name: elasticsearch-node2
-    env_file:
-      - .env
+  logstash:
+    container_name: logstash
+    image: logstash:7.16.2
+    volumes:
+      - ./configs/logstash/config.yml:/usr/share/logstash/config/logstash.yml:ro
     environment:
-      - node.name=elasticsearch-node2
-      - discovery.seed_hosts=elasticsearch-node1,elasticsearch-node2
-      - cluster.initial_master_nodes=elasticsearch-node1,elasticsearch-node2
-      - cluster.name=${CLUSTER_NAME}
-      - bootstrap.memory_lock=${MEMORY_LOCK}
-      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
-      - xpack.security.enabled=false
-      - xpack.monitoring.collection.enabled=false
+      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
+    ports:
+      - "5044:5044"
+      - "5000:5000"
+      - "9600:9600"
+    networks:
+      - elk
     depends_on:
-      - elasticsearch-node1
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+      - elasticsearch
+
+  kibana:
+    container_name: kibana
+    image: kibana:7.16.1
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./configs/kibana/config.yml:/usr/share/kibana/config/kibana.yml:ro
+    networks:
+      - elk
+    ports:
+      - "5601:5601"
+
+networks:
+  elk:
+    driver: bridge
