@@ -4,9 +4,11 @@ services:
 
   main:
     container_name: main
-    build: ./main
+    build: ./main_cont
     expose:
       - "8000"
+    ports:
+      - ${MAIN_PORTS}
     env_file:
       - .env
     depends_on:

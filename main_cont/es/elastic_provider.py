@@ -1,5 +1,5 @@
 from configs.settings import ElasticSettings
-from elasticsearch import AsyncElasticsearch
+from elastic import AsyncElasticsearch
 
 
 class ElasticProvider:
