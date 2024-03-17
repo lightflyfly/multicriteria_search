@@ -12,4 +12,4 @@ filebeat.inputs:
 
 output.logstash:
   # Будьте внимательны при запуске вне докера и вместо logstash укажите правильный адрес хоста с logstash.
-  hosts: ["http://logstash:5044"]
+  hosts: ["logstash:5044"]

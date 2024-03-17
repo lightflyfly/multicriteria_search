@@ -2,17 +2,17 @@ version: '3'
 
 services:
 
-#  main:
-#    container_name: main
-#    build: ./main_cont
-#    expose:
-#      - "8000"
-#    ports:
-#      - ${MAIN_PORTS}
-#    env_file:
-#      - .env
-#    depends_on:
-#      - elasticsearch
+  main:
+    container_name: main
+    build: ./main_cont
+    expose:
+      - "8000"
+    ports:
+      - ${MAIN_PORTS}
+    env_file:
+      - .env
+    depends_on:
+      - elasticsearch
 
   elasticsearch:
     container_name: elasticsearch
@@ -29,8 +29,6 @@ services:
     ports:
       - "9200:9200"
       - "9300:9300"
-    networks:
-      - elk
 
   logstash:
     container_name: logstash
@@ -47,8 +45,6 @@ services:
       - "9600:9600"
     depends_on:
       - elasticsearch
-    networks:
-      - elk
 
   kibana:
     container_name: kibana
@@ -59,8 +55,6 @@ services:
       - ./configs/kibana/config.yml:/usr/share/kibana/config/kibana.yml:ro
     ports:
       - "5601:5601"
-    networks:
-      - elk
 
   beats:
     container_name: beats
@@ -68,12 +62,6 @@ services:
     command: filebeat -e -strict.perms=false
     volumes:
       - ./configs/filebeat/config.yml:/usr/share/filebeat/filebeat.yml:ro
-      - ./host_metrics_app/:/host_metrics_app/:ro
+      - ./host_metrics_app/host_metrics_app.log:/host_metrics_app/host_metrics_app.log:ro
     depends_on:
       - elasticsearch
-    networks:
-      - elk
-
-networks:
-  elk:
-    driver: bridge
