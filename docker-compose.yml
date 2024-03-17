@@ -2,19 +2,17 @@ version: '3'
 
 services:
 
-  main:
-    container_name: main
-    build: ./main_cont
-    expose:
-      - "8000"
-    ports:
-      - ${MAIN_PORTS}
-    env_file:
-      - .env
-    depends_on:
-      - elasticsearch
-    networks:
-      - elk
+#  main:
+#    container_name: main
+#    build: ./main_cont
+#    expose:
+#      - "8000"
+#    ports:
+#      - ${MAIN_PORTS}
+#    env_file:
+#      - .env
+#    depends_on:
+#      - elasticsearch
 
   elasticsearch:
     container_name: elasticsearch
@@ -27,11 +25,12 @@ services:
       ELASTIC_USERNAME: "elastic"
       ELASTIC_PASSWORD: "qwe123"
       discovery.type: single-node
-    networks:
-      - elk
+
     ports:
       - "9200:9200"
       - "9300:9300"
+    networks:
+      - elk
 
   logstash:
     container_name: logstash
@@ -46,10 +45,10 @@ services:
       - "5044:5044"
       - "5000:5000"
       - "9600:9600"
-    networks:
-      - elk
     depends_on:
       - elasticsearch
+    networks:
+      - elk
 
   kibana:
     container_name: kibana
@@ -58,10 +57,10 @@ services:
       - elasticsearch
     volumes:
       - ./configs/kibana/config.yml:/usr/share/kibana/config/kibana.yml:ro
-    networks:
-      - elk
     ports:
       - "5601:5601"
+    networks:
+      - elk
 
   beats:
     container_name: beats
@@ -70,10 +69,10 @@ services:
     volumes:
       - ./configs/filebeat/config.yml:/usr/share/filebeat/filebeat.yml:ro
       - ./host_metrics_app/:/host_metrics_app/:ro
-    networks:
-      - elk
     depends_on:
       - elasticsearch
+    networks:
+      - elk
 
 networks:
   elk:
