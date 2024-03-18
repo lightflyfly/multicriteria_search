@@ -12,7 +12,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./logs/fastapi-main.log:/logs/fastapi-main.log:rw
+      - ./logs/fastapi_main.log:/logs/fastapi_main.log:rw
     depends_on:
       - elasticsearch
 
@@ -64,7 +64,7 @@ services:
     command: filebeat -e -strict.perms=false
     volumes:
       - ./configs/filebeat/config.yml:/usr/share/filebeat/filebeat.yml:ro
-      - ./logs/fastapi-main.log:/logs/fastapi-main.log:ro
+      - ./logs/fastapi_main.log:/logs/fastapi_main.log:ro
     depends_on:
       - elasticsearch
 

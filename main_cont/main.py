@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from api.v1 import suppliers
-from core.config import settings, logger
+from core.config import settings
 from es import elastic
 
 app = FastAPI(
@@ -18,7 +18,6 @@ app = FastAPI(
 @app.on_event('startup')
 async def startup():
     elastic.es = AsyncElasticsearch(hosts=[f'http://{settings.elastic_host}:{settings.elastic_port}'])
-    logger.info('WE STARTED')
 
 
 @app.on_event('shutdown')

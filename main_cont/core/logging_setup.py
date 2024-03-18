@@ -23,7 +23,7 @@ def setup_root_logger():
 
     # Настройка хэндлера для записи в файл с ротацией
     file_handler = RotatingFileHandler(
-        filename="./logs/fastapi-main.log",
+        filename="./logs/fastapi_main.log",
         mode='a',
         maxBytes=15000000,
         backupCount=5)
