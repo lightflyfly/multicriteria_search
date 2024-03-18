@@ -1,13 +1,10 @@
-import logging
-
 import uvicorn
 from elasticsearch import AsyncElasticsearch
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from api.v1 import suppliers
-from core.config import settings
-from core.logger import LOGGING
+from core.config import settings, logger
 from es import elastic
 
 app = FastAPI(
@@ -21,6 +18,7 @@ app = FastAPI(
 @app.on_event('startup')
 async def startup():
     elastic.es = AsyncElasticsearch(hosts=[f'http://{settings.elastic_host}:{settings.elastic_port}'])
+    logger.info('WE STARTED')
 
 
 @app.on_event('shutdown')
@@ -33,7 +31,5 @@ if __name__ == '__main__':
     uvicorn.run(
         'main:app',
         host=settings.main_host,
-        port=settings.main_port,
-        log_config=LOGGING,
-        log_level=logging.DEBUG
+        port=settings.main_port
     )

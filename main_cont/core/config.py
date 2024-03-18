@@ -2,6 +2,8 @@ import logging
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from core.logging_setup import setup_root_logger
+
 log_levels = {
     'DEBUG': logging.DEBUG,
     'INFO': logging.INFO,
@@ -28,11 +30,13 @@ class Settings(BaseSettings):
 
 settings = Settings()
 
-logging.basicConfig(
-    level=settings.get_logging_level(),
-    format='%(levelname)s - %(message)s',
-)
+setup_root_logger()
 
+# logging.basicConfig(
+#     level=settings.get_logging_level(),
+#     format='%(levelname)s - %(message)s',
+# )
+#
 logger = logging.getLogger(__name__)
 
 
