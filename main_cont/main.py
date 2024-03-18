@@ -1,11 +1,10 @@
 import uvicorn
-from elasticsearch import AsyncElasticsearch
-from fastapi import FastAPI
-from fastapi.responses import ORJSONResponse
-
 from api.v1 import suppliers
 from core.config import settings
+from elasticsearch import AsyncElasticsearch
 from es import elastic
+from fastapi import FastAPI
+from fastapi.responses import ORJSONResponse
 
 app = FastAPI(
     title=settings.project_name,
@@ -17,14 +16,18 @@ app = FastAPI(
 
 @app.on_event('startup')
 async def startup():
-    elastic.es = AsyncElasticsearch(hosts=[f'http://{settings.elastic_host}:{settings.elastic_port}'])
+    elastic.es = AsyncElasticsearch(
+        hosts=[f'http://{settings.elastic_host}:{settings.elastic_port}'])
 
 
 @app.on_event('shutdown')
 async def shutdown():
     await elastic.es.close()
 
-app.include_router(suppliers.router, prefix='/api/v1/suppliers', tags=['Suppliers'])
+app.include_router(
+    suppliers.router,
+    prefix='/api/v1/suppliers',
+    tags=['Suppliers'])
 
 if __name__ == '__main__':
     uvicorn.run(

@@ -1,8 +1,7 @@
 import logging
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
-
 from core.logging_setup import setup_root_logger
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 log_levels = {
     'DEBUG': logging.DEBUG,
