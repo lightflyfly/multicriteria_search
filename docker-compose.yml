@@ -6,7 +6,7 @@ services:
     container_name: main
     build: ./main_cont
     expose:
-      - "8000"
+      - ${MAIN_PORT}
     ports:
       - ${MAIN_PORTS}
     env_file:
@@ -18,53 +18,59 @@ services:
 
   elasticsearch:
     container_name: elasticsearch
-    image: elasticsearch:7.16.1
+    image: elasticsearch:${ES_VERSION}
     volumes:
       - ./configs/elasticsearch/config.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - ./docker_volumes/elasticsearch/data:/usr/share/elasticsearch/data
+    env_file:
+      - .env
     environment:
       ES_JAVA_OPTS: "-Xmx512m -Xms512m"
-      ELASTIC_USERNAME: "elastic"
-      ELASTIC_PASSWORD: "qwe123"
       discovery.type: single-node
 
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - ${ES_PORTS1}
+      - ${ES_PORTS2}
 
   logstash:
     container_name: logstash
-    image: logstash:7.16.2
+    image: logstash:${LOGSTASH_VERSION}
     volumes:
       - ./configs/logstash/config.yml:/usr/share/logstash/config/logstash.yml:ro
       - ./configs/logstash/pipelines.yml:/usr/share/logstash/config/pipelines.yml:ro
       - ./configs/logstash/pipelines:/usr/share/logstash/config/pipelines:ro
+    env_file:
+      - .env
     environment:
       LS_JAVA_OPTS: "-Xmx512m -Xms512m"
     ports:
-      - "5044:5044"
-      - "5000:5000"
-      - "9600:9600"
+      - ${LOGSTASH_PORTS1}
+      - ${LOGSTASH_PORTS2}
+      - ${LOGSTASH_PORTS3}
     depends_on:
       - elasticsearch
 
   kibana:
     container_name: kibana
-    image: kibana:7.16.1
+    image: kibana:${KIBANA_VERSION}
     depends_on:
       - elasticsearch
     volumes:
       - ./configs/kibana/config.yml:/usr/share/kibana/config/kibana.yml:ro
+    env_file:
+      - .env
     ports:
-      - "5601:5601"
+      - ${KIBANA_PORTS}
 
   filebeat:
     container_name: filebeat
-    image: elastic/filebeat:7.16.2
+    image: elastic/filebeat:${FILEBEAT_VERSION}
     command: filebeat -e -strict.perms=false
     volumes:
       - ./configs/filebeat/config.yml:/usr/share/filebeat/filebeat.yml:ro
       - ./logs/fastapi_main.log:/logs/fastapi_main.log:ro
+    env_file:
+      - .env
     depends_on:
       - elasticsearch
 
