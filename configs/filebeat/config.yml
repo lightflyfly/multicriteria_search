@@ -1,0 +1,15 @@
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /logs/fastapi_main.log
+    # В fields мы можем указать дополнительные поля, а затем в logstash вытаскивать их
+    # и делать какую-нибудь дополнительную работу с логами
+    fields:
+      # Название нашего сервиса
+      service: fastapi_main
+
+# Будьте внимательны при запуске вне докера и вместо logstash укажите правильный адрес хоста с logstash.
+output.logstash:
+  hosts:
+    - ${LOGSTASH_HOST}

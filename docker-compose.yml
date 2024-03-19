@@ -1,0 +1,78 @@
+version: '3'
+
+services:
+
+  main:
+    container_name: main
+    build: ./main_cont
+    expose:
+      - ${MAIN_PORT}
+    ports:
+      - ${MAIN_PORTS}
+    env_file:
+      - .env
+    volumes:
+      - ./logs/fastapi_main.log:/logs/fastapi_main.log:rw
+    depends_on:
+      - elasticsearch
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:${ES_VERSION}
+    volumes:
+      - ./configs/elasticsearch/config.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./docker_volumes/elasticsearch/data:/usr/share/elasticsearch/data
+    env_file:
+      - .env
+    environment:
+      ES_JAVA_OPTS: "-Xmx512m -Xms512m"
+      discovery.type: single-node
+
+    ports:
+      - ${ES_PORTS1}
+      - ${ES_PORTS2}
+
+  logstash:
+    container_name: logstash
+    image: logstash:${LOGSTASH_VERSION}
+    volumes:
+      - ./configs/logstash/config.yml:/usr/share/logstash/config/logstash.yml:ro
+      - ./configs/logstash/pipelines.yml:/usr/share/logstash/config/pipelines.yml:ro
+      - ./configs/logstash/pipelines:/usr/share/logstash/config/pipelines:ro
+    env_file:
+      - .env
+    environment:
+      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
+    ports:
+      - ${LOGSTASH_PORTS1}
+      - ${LOGSTASH_PORTS2}
+      - ${LOGSTASH_PORTS3}
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    container_name: kibana
+    image: kibana:${KIBANA_VERSION}
+    depends_on:
+      - elasticsearch
+    volumes:
+      - ./configs/kibana/config.yml:/usr/share/kibana/config/kibana.yml:ro
+    env_file:
+      - .env
+    ports:
+      - ${KIBANA_PORTS}
+
+  filebeat:
+    container_name: filebeat
+    image: elastic/filebeat:${FILEBEAT_VERSION}
+    command: filebeat -e -strict.perms=false
+    volumes:
+      - ./configs/filebeat/config.yml:/usr/share/filebeat/filebeat.yml:ro
+      - ./logs/fastapi_main.log:/logs/fastapi_main.log:ro
+    env_file:
+      - .env
+    depends_on:
+      - elasticsearch
+
+volumes:
+  logs:
