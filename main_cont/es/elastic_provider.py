@@ -1,4 +1,4 @@
-from configs.settings import ElasticSettings
+from core.config import ElasticSettings
 from elastic import AsyncElasticsearch
 
 
