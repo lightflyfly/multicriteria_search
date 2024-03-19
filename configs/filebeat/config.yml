@@ -9,6 +9,7 @@ filebeat.inputs:
       # Название нашего сервиса
       service: fastapi_main
 
-output.logstash:
 # Будьте внимательны при запуске вне докера и вместо logstash укажите правильный адрес хоста с logstash.
-  hosts: ["logstash:5044"]
+output.logstash:
+  hosts:
+    - ${LOGSTASH_HOST}
